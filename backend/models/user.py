@@ -1,6 +1,7 @@
 from ..core.database import Base
 from sqlalchemy import Column, String, Text, func, text
 from sqlalchemy.dialects.postgresql import BIGINT, JSONB, TIMESTAMP
+from pgvector.sqlalchemy import Vector
 
 class User(Base):
     __tablename__ = "users"
@@ -14,4 +15,5 @@ class User(Base):
     bio = Column(Text, nullable=True, server_default=text("''::text"))
     country = Column(String, nullable=True)
     city = Column(String, nullable=True)
+    embedding = Column(Vector(384), nullable=True)
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())

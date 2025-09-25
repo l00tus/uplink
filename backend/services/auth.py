@@ -4,6 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta
 from ..core.config import settings
+from ..core.embedding_model import get_embeddings
 from ..models.user import User
 from ..schemas.user import UserCreate, UserRead
 from ..schemas.auth import UserLogin, Token
@@ -36,7 +37,8 @@ class AuthService:
                 )
                 
         hashed_password = bcrypt.hashpw(user_data.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-        
+        user_embedding = get_embeddings(user_data.interests)
+
         new_user = User(
             email=user_data.email,
             username=user_data.username,
@@ -46,6 +48,7 @@ class AuthService:
             bio=user_data.bio,
             country=user_data.country,
             city=user_data.city,
+            embedding=user_embedding
         )
         
         db.add(new_user)

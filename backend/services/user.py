@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from ..models.user import User
 from ..schemas.user import UserCreate, UserRead, UserUpdate, UserDelete
+from ..core.embedding_model import get_embeddings
 import bcrypt
 
 class UserService:
@@ -26,6 +27,7 @@ class UserService:
                 )
                 
         hashed_password = bcrypt.hashpw(user_data.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        user_embedding = get_embeddings(user_data.interests)
         
         new_user = User(
             email=user_data.email,
@@ -36,6 +38,7 @@ class UserService:
             bio=user_data.bio,
             country=user_data.country,
             city=user_data.city,
+            embedding=user_embedding
         )
         
         db.add(new_user)
@@ -113,6 +116,9 @@ class UserService:
         
         for field, value in update_data.items():
             setattr(db_user, field, value)
+        
+        if 'interests' in update_data:
+            db_user.embedding = get_embeddings(update_data['interests'])
         
         await db.commit()
         await db.refresh(db_user)
