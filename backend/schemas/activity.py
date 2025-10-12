@@ -43,4 +43,5 @@ class ActivitySimilarity(BaseModel):
     date_time: datetime
     location: str
     max_participants: int
+    tags: list[str]
     similarity: float

@@ -235,6 +235,7 @@ class ActivityService:
                 date_time=activity.date_time,
                 location=activity.location,
                 max_participants=activity.max_participants,
+                tags=activity.tags,
                 similarity=similarity
             )
             for activity, similarity in top
